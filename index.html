@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ZeroBite Campus — Human-Computer Interaction Smart Cafeteria Pre-Order & Food Waste Reduction System" />
+  <title>ZeroBite Campus — HCI Smart Cafeteria System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body id="appBody" class="bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-200">
+
+  <!-- Skip to Main Content Link (WCAG 2.4.1 Bypass Blocks) -->
+  <a href="#mainWorkspace" class="skip-link">Skip to Meal Selection</a>
+
+  <!-- Top Navigation & Universal Design Controls -->
+  <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm" role="banner">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-sm" aria-hidden="true">
+          ZB
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900 leading-tight">ZeroBite Campus</h1>
+          <p class="text-xs text-slate-500">Techno Main Salt Lake • Smart Pre-Order &amp; Waste Reduction</p>
+        </div>
+      </div>
+
+      <!-- Universal Design / Accessibility Controls (WCAG 2.1 AA/AAA) -->
+      <nav aria-label="Accessibility and Evaluation Controls" class="flex items-center gap-2">
+        <button id="toggleFontBtn" type="button" aria-pressed="false" aria-label="Toggle Large Font Size"
+          class="fitts-target px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+          A+ Text Size
+        </button>
+        <button id="toggleContrastBtn" type="button" aria-pressed="false" aria-label="Toggle High Contrast Mode"
+          class="fitts-target px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+          High Contrast
+        </button>
+        <button id="openTelemetryBtn" type="button" aria-expanded="false" aria-controls="hciDrawer"
+          class="fitts-target px-3 py-2 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition">
+          HCI Telemetry (<span id="clickCountBadge">0</span>)
+        </button>
+      </nav>
+    </div>
+
+    <!-- System Status Banner (Nielsen Heuristic #1: Visibility of System Status) -->
+    <div class="bg-emerald-50 border-t border-emerald-100 px-4 py-1.5 text-xs text-emerald-950" role="status" aria-live="polite">
+      <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+        <span>
+          <strong>Live Kitchen Batch Status:</strong> Lunch Window Active • 
+          <strong>14.2 kg</strong> surplus food prevented today
+        </span>
+        <span id="pickupEta" class="font-semibold text-emerald-800">Est. Queue Wait: 2 mins</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEW 1: Main Meal Selection Workspace -->
+  <main id="mainWorkspace" class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column: Menu Selection (Hick's Law & Recognition Over Recall) -->
+    <section class="lg:col-span-8 space-y-5" aria-labelledby="menuSectionHeading">
+      <h2 id="menuSectionHeading" class="sr-only">Cafeteria Meal Selection</h2>
+
+      <!-- Step 1: Pickup Slot Selector -->
+      <div class="card-surface bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2.5">
+          <span id="slotGroupLabel" class="text-sm font-bold text-slate-800">
+            1. Select Pickup Window (Prevents Batch Overcooking)
+          </span>
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-medium">
+            Closes 15m prior
+          </span>
+        </div>
+
+        <div id="slotGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="radiogroup" aria-labelledby="slotGroupLabel">
+          <button type="button" role="radio" aria-checked="true" data-slot="12:30 PM" data-wait="2 mins" data-discount="0"
+            class="slot-btn fitts-target rounded-xl border-2 border-emerald-600 bg-emerald-50 text-emerald-950 font-semibold text-sm p-2.5 text-left sm:text-center transition">
+            12:30 PM
+            <span class="block text-[11px] font-normal text-emerald-800">Low Crowd • 2m wait</span>
+          </button>
+
+          <button type="button" role="radio" aria-checked="false" data-slot="01:15 PM" data-wait="6 mins" data-discount="0"
+            class="slot-btn fitts-target rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm p-2.5 text-left sm:text-center hover:border-slate-400 transition">
+            01:15 PM
+            <span class="block text-[11px] font-normal text-slate-500">Peak Slot • 6m wait</span>
+          </button>
+
+          <button type="button" role="radio" aria-checked="false" data-slot="02:00 PM" data-wait="1 min" data-discount="10"
+            class="slot-btn fitts-target rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm p-2.5 text-left sm:text-center hover:border-slate-400 transition">
+            02:00 PM
+            <span class="block text-[11px] font-normal text-emerald-700 font-medium">10% Off-Peak Eco-Discount</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Hick's Law Filter Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div id="filterGroup" class="flex flex-wrap gap-2" role="tablist" aria-label="Dietary Category Filters">
+          <button type="button" role="tab" aria-selected="true" data-filter="all"
+            class="filter-btn fitts-target px-4 py-2 rounded-full text-sm font-semibold bg-slate-900 text-white transition">
+            All Meals
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-filter="veg"
+            class="filter-btn fitts-target px-4 py-2 rounded-full text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition">
+            Pure Veg
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-filter="high-protein"
+            class="filter-btn fitts-target px-4 py-2 rounded-full text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition">
+            High Protein
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-filter="light"
+            class="filter-btn fitts-target px-4 py-2 rounded-full text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition">
+            Light Portion
+          </button>
+        </div>
+        <p class="text-xs font-medium text-slate-500" id="menuCountLabel" aria-live="polite">Showing 6 curated meals</p>
+      </div>
+
+      <!-- Menu Cards Grid -->
+      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4" role="region" aria-label="Available Meals"></div>
+    </section>
+
+    <!-- Right Column: Smart Portion Tray & Checkout -->
+    <aside class="lg:col-span-4" aria-labelledby="trayHeading">
+      <div class="card-surface bg-white p-5 rounded-2xl border border-slate-200 shadow-sm sticky top-28 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 id="trayHeading" class="text-base font-bold text-slate-900">Your Smart Tray</h2>
+          <span id="selectedSlotBadge" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-900">
+            12:30 PM
+          </span>
+        </div>
+
+        <!-- Hunger / Portion Calibration -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center mb-1.5">
+            <span id="portionLabel" class="text-xs font-bold text-slate-700">Hunger Calibration</span>
+            <span id="wasteSavedTag" class="text-[11px] font-semibold text-emerald-700">Standard (0g saved)</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="portionLabel">
+            <button type="button" role="radio" aria-checked="true" id="portionRegular" data-portion="regular"
+              class="portion-btn fitts-target py-2 px-3 rounded-lg text-xs font-bold border-2 border-slate-900 bg-slate-900 text-white transition">
+              Regular (100%)
+            </button>
+            <button type="button" role="radio" aria-checked="false" id="portionLite" data-portion="lite"
+              class="portion-btn fitts-target py-2 px-3 rounded-lg text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">
+              Lite (-25% &amp; ₹15 off)
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Cart Items List -->
+        <div id="cartList" class="space-y-2.5 max-h-64 overflow-y-auto pr-1" aria-live="polite">
+          <p class="text-sm text-slate-400 text-center py-6">Your tray is empty. Select a meal to start.</p>
+        </div>
+
+        <!-- Undo Banner -->
+        <div id="undoToast" role="alert" class="hidden items-center justify-between bg-slate-800 text-white text-xs px-3 py-2.5 rounded-xl shadow-sm">
+          <span id="undoMessage">Item removed</span>
+          <button id="undoBtn" type="button" class="font-bold underline text-amber-300 hover:text-amber-200 ml-2 px-2 py-1">
+            UNDO
+          </button>
+        </div>
+
+        <!-- Financial & Ecological Summary + Proceed to Payment CTA -->
+        <div class="border-t border-slate-200 pt-3 space-y-2 text-sm">
+          <div class="flex justify-between text-slate-600 text-xs">
+            <span>Subtotal</span>
+            <span id="subtotalAmt" class="font-medium">₹0</span>
+          </div>
+          <div class="flex justify-between text-emerald-700 text-xs">
+            <span>Eco &amp; Portion Savings</span>
+            <span id="discountAmt" class="font-semibold">-₹0</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-slate-900 pt-1 border-t border-slate-100">
+            <span>Total Payable</span>
+            <span id="totalAmt">₹0</span>
+          </div>
+          <button id="checkoutBtn" type="button" disabled
+            class="fitts-target w-full mt-2 py-3.5 px-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed shadow-md transition">
+            Proceed to Payment Gateway →
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- VIEW 2: Secure Campus Payment Gateway Page (Hidden until Checkout) -->
+  <section id="paymentView" class="hidden max-w-4xl mx-auto px-4 py-8 space-y-6" aria-labelledby="gatewayHeading">
+    
+    <!-- Back Navigation (Nielsen Heuristic #3: User Control & Freedom) -->
+    <div class="flex items-center justify-between">
+      <button id="backToMenuBtn" type="button"
+        class="fitts-target inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-xs font-bold text-slate-800 transition">
+        ← Back to Meal Tray
+      </button>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900">
+        🔒 256-Bit SSL Campus Gateway
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      
+      <!-- Left: 3 Payment Method Options & Dynamic Gateway Form (7 Columns) -->
+      <div class="md:col-span-7 card-surface bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+        <div>
+          <h2 id="gatewayHeading" class="text-lg font-bold text-slate-900">Select Payment Method</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Choose one of the 3 verified campus payment channels below</p>
+        </div>
+
+        <!-- 3 Payment Method Selector Tabs (Hick's Law: 3 Clear Choices) -->
+        <div id="paymentMethodGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="radiogroup" aria-label="Payment Gateway Options">
+          <button type="button" role="radio" aria-checked="true" data-method="upi"
+            class="pay-method-btn fitts-target p-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 text-emerald-950 text-left transition">
+            <span class="block text-xs font-bold">1. UPI Instant</span>
+            <span class="block text-[11px] text-emerald-800 mt-0.5">GPay / PhonePe / QR</span>
+          </button>
+
+          <button type="button" role="radio" aria-checked="false" data-method="card"
+            class="pay-method-btn fitts-target p-3 rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-slate-400 text-left transition">
+            <span class="block text-xs font-bold">2. Debit / Credit Card</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">RuPay / Visa / MC</span>
+          </button>
+
+          <button type="button" role="radio" aria-checked="false" data-method="wallet"
+            class="pay-method-btn fitts-target p-3 rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-slate-400 text-left transition">
+            <span class="block text-xs font-bold">3. Campus Wallet</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">Student ID Credits</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Payment Panel A: UPI Instant Pay -->
+        <div id="panel-upi" class="payment-panel space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800">Pay via UPI ID or Campus QR</span>
+            <span class="text-[11px] font-semibold text-emerald-700">Zero Convenience Fee</span>
+          </div>
+          <div>
+            <label for="upiInput" class="block text-xs font-semibold text-slate-700 mb-1">Enter UPI ID (e.g., name@okaxis / 9876543210@upi)</label>
+            <input id="upiInput" type="text" placeholder="saswata@okicici"
+              class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm text-slate-900" />
+          </div>
+          <div class="flex items-center gap-3 pt-1">
+            <div class="w-16 h-16 rounded-lg bg-white border border-slate-300 flex items-center justify-center text-[10px] font-mono text-center text-slate-600 p-1">
+              [UPI QR CODE]
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Scan directly using any UPI app or enter your VPA above to receive an instant collect request.
+            </p>
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Panel B: Debit / Credit Card -->
+        <div id="panel-card" class="payment-panel hidden space-y-3.5 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div>
+            <label for="cardNumberInput" class="block text-xs font-semibold text-slate-700 mb-1">Card Number</label>
+            <input id="cardNumberInput" type="text" maxlength="19" placeholder="4532 •••• •••• 8891"
+              class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-mono text-slate-900" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="cardExpiryInput" class="block text-xs font-semibold text-slate-700 mb-1">Valid Thru (MM/YY)</label>
+              <input id="cardExpiryInput" type="text" maxlength="5" placeholder="08/29"
+                class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-mono text-slate-900" />
+            </div>
+            <div>
+              <label for="cardCvvInput" class="block text-xs font-semibold text-slate-700 mb-1">CVV</label>
+              <input id="cardCvvInput" type="password" maxlength="3" placeholder="•••"
+                class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-mono text-slate-900" />
+            </div>
+          </div>
+          <div>
+            <label for="cardNameInput" class="block text-xs font-semibold text-slate-700 mb-1">Cardholder Name</label>
+            <input id="cardNameInput" type="text" placeholder="SASWATA BANERJEE"
+              class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm text-slate-900" />
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Panel C: Campus Student Smart Wallet -->
+        <div id="panel-wallet" class="payment-panel hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800">Techno Main Smart Meal Card</span>
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-900">Balance: ₹850.00</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Instant 1-tap deduction linked to your University Roll / RFID Card. Includes automated monthly eco-reward cashback.
+          </p>
+          <div>
+            <label for="studentIdInput" class="block text-xs font-semibold text-slate-700 mb-1">University Roll / ID Number</label>
+            <input id="studentIdInput" type="text" value="TMSL-MTECH-CSE-014"
+              class="fitts-target w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-mono text-slate-900" />
+          </div>
+        </div>
+
+        <!-- Validation Error Banner (Nielsen Heuristic #9: Help Users Recognize & Recover from Errors) -->
+        <p id="paymentErrorMsg" role="alert" class="hidden text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-2 rounded-lg"></p>
+
+        <!-- Primary Pay Now CTA (Fitts's Law Large Target) -->
+        <button id="payNowBtn" type="button"
+          class="fitts-target w-full py-3.5 px-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition">
+          Pay <span id="payBtnAmount">₹0</span> &amp; Confirm Order
+        </button>
+      </div>
+
+      <!-- Right: Order Breakdown Summary (5 Columns) -->
+      <div class="md:col-span-5 card-surface bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 h-fit">
+        <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Order &amp; Eco Summary</h3>
+        
+        <div class="text-xs space-y-1.5 text-slate-600">
+          <div class="flex justify-between">
+            <span>Pickup Time Slot:</span>
+            <strong id="gatewaySlot" class="text-slate-900">12:30 PM</strong>
+          </div>
+          <div class="flex justify-between">
+            <span>Portion Mode:</span>
+            <strong id="gatewayPortion" class="text-slate-900 capitalize">Regular</strong>
+          </div>
+          <div class="flex justify-between">
+            <span>Surplus Food Prevented:</span>
+            <strong id="gatewayWaste" class="text-emerald-700">~180 grams</strong>
+          </div>
+        </div>
+
+        <div id="gatewayItemList" class="border-t border-b border-slate-100 py-3 space-y-2 text-xs"></div>
+
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between text-slate-600">
+            <span>Item Subtotal</span>
+            <span id="gatewaySubtotal">₹0</span>
+          </div>
+          <div class="flex justify-between text-emerald-700 font-semibold">
+            <span>Eco &amp; Portion Savings</span>
+            <span id="gatewayDiscount">-₹0</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
+            <span>Final Payable</span>
+            <span id="gatewayTotal">₹0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order Confirmation Modal (Feedback & Mental Model Closure) -->
+  <div id="orderModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+    role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold" aria-hidden="true">
+        ✓
+      </div>
+      <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Payment Successful &amp; Sent to Kitchen!</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        Your meal will be freshly plated 3 minutes before your <strong id="modalSlot">12:30 PM</strong> pickup window.
+      </p>
+      <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Pickup Token ID:</span>
+          <strong id="modalToken" class="text-slate-900 font-mono">#ZB-409</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Payment Mode:</span>
+          <strong id="modalPayMethod" class="text-slate-900">UPI Instant</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Amount Paid:</span>
+          <strong id="modalAmountPaid" class="text-emerald-700">₹0</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Surplus Food Waste Prevented:</span>
+          <strong id="modalWasteSaved" class="text-emerald-700">~180 grams</strong>
+        </div>
+      </div>
+      <button id="closeModalBtn" type="button" class="fitts-target w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition">
+        Done &amp; Start New Order
+      </button>
+    </div>
+  </div>
+
+  <!-- Empirical HCI Telemetry & Evaluation Drawer -->
+  <aside id="hciDrawer" class="hidden fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-900 text-slate-100 p-6 shadow-2xl overflow-y-auto space-y-5"
+    aria-labelledby="drawerTitle">
+    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+      <h3 id="drawerTitle" class="text-base font-bold text-emerald-400">Live HCI Evaluation Telemetry</h3>
+      <button id="closeTelemetryBtn" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold transition">
+        Close (Esc)
+      </button>
+    </div>
+
+    <p class="text-xs text-slate-400 leading-relaxed">
+      Empirical interaction metrics captured in real time for KLM-GOMS modeling and Usability Lab validation:
+    </p>
+
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+        <span class="text-slate-400 block mb-0.5">Task Elapsed Time</span>
+        <strong id="telemetryTime" class="text-lg text-white font-mono">0.0s</strong>
+      </div>
+      <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+        <span class="text-slate-400 block mb-0.5">Total Interactions</span>
+        <strong id="telemetryClicks" class="text-lg text-white font-mono">0</strong>
+      </div>
+      <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+        <span class="text-slate-400 block mb-0.5">Error / Undo Recoveries</span>
+        <strong id="telemetryUndos" class="text-lg text-amber-400 font-mono">0</strong>
+      </div>
+      <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+        <span class="text-slate-400 block mb-0.5">Fitts's Min Target</span>
+        <strong class="text-lg text-emerald-400 font-mono">48 × 48 px</strong>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <button id="exportTelemetryBtn" type="button"
+        class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+        Export Session JSON Log
+      </button>
+    </div>
+
+    <div>
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Interaction Event Stream</h4>
+      <ul id="eventLog" class="text-xs font-mono space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800 max-h-64 overflow-y-auto text-emerald-300">
+        <li>[0.0s] Session initialized — Task: Order Lunch</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Modular JavaScript Layer -->
+  <script src="js/data.js"></script>
+  <script src="js/telemetry.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+@"
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+zerobite-hci-telemetry-*.json
+"@ | Out-File -Encoding utf8 .gitignore

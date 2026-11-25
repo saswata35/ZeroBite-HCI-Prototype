@@ -1,0 +1,72 @@
+/* ==========================================================================
+   ZeroBite Campus — HCI Design Tokens & WCAG 2.1 AA/AAA Accessibility Styles
+   ========================================================================== */
+
+:root {
+  --focus-ring-color: #2563eb;
+  --min-touch-target: 48px;
+  --hc-bg: #000000;
+  --hc-surface: #0f172a;
+  --hc-border: #facc15;
+  --hc-text: #ffffff;
+}
+
+/* WCAG 2.4.1 Bypass Blocks: Keyboard Skip Link */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 16px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  z-index: 100;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* WCAG 2.4.7 Focus Visible: High-visibility keyboard navigation indicator */
+:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Fitts's Law & WCAG 2.5.5 Level AAA Target Size Compliance (48x48px) */
+.fitts-target {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+}
+
+/* WCAG 1.4.6 Enhanced High-Contrast Theme (>= 14:1 Luminance Ratio) */
+body.high-contrast {
+  background-color: var(--hc-bg) !important;
+  color: var(--hc-text) !important;
+}
+
+body.high-contrast header,
+body.high-contrast .card-surface {
+  background-color: var(--hc-surface) !important;
+  border-color: var(--hc-border) !important;
+  color: var(--hc-text) !important;
+}
+
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast p,
+body.high-contrast span {
+  color: var(--hc-text) !important;
+}
+
+body.high-contrast button[aria-pressed="true"],
+body.high-contrast button[aria-checked="true"],
+body.high-contrast button[aria-selected="true"] {
+  background-color: var(--hc-border) !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
