@@ -168,5 +168,5 @@ git push -u origin main
 * M.Tech in Computer Science and Engineering (CSE), Techno Main Salt Lake  
 * B.Tech in Computer Science and Engineering – Data Science (CSE-DS), MCKV Institute of Engineering  
 * GitHub: [@saswata35](https://github.com/saswata35)
-* Repo: 
+* Repo: https://saswata35.github.io/ZeroBite-HCI-Prototype/
 * Vercel: https://zerobite-hci-prototype.vercel.app/
